@@ -218,10 +218,9 @@ for i=1:length(folders)
         if strcmp(datatype, 'CaT') || strcmp(datatype, 'APCaT')
             [exp_T_CaT, exp_CaT, T_CaT, CaT] = f_alignWaveformEnds(expT{j}, expCai{j}, t, Cai) ;
             CaT_sim = interp1(T_CaT, CaT, exp_T_CaT);
-            % Average of 600ms PCL, 800ms PCL, and spontaneous factors
-            CaT_factor = (248317.2776 + 275865.6087 + 258347.0044) / 3 ;
-            CaT_sim = CaT_sim*CaT_factor ;
-            exp_CaT = exp_CaT*CaT_factor ;
+
+            % Scale CaT using ratio from experimental APA/CaTA
+            CaT_factor = range(exp_V) / range(exp_CaT) ;
             
             % Record new range(V_sim)/range(CaT_sim)
             AP_CaT_ratio = range(V_sim) / range(CaT_sim) ;

@@ -11,12 +11,3 @@ fit_model = 'Kernik19' ;    % options: Kernik19, Paci18
 
 % function: f_plotDistribution(folders, groundTruthNorm, objective, logfactor, fp_out)
 f_plotParameterEstimates(folders, objective, logfactor, logplot, lim, data_model, fit_model) ;
-
-% Plot Kernik baseline parameters / ground truth cell
-% load([folders{1}, '/Details.mat'], 'cell_number') ;
-% ground_truth = readmatrix('Pseudodataset/saved_data/ground_truth_conductances.xlsx') ;
-% ground_truth = ground_truth(cell_number, :) ;  
-% baseline = 1 ./ ground_truth ; 
-% baseline_log = log2(baseline) ;
-% plot(baseline_log, 'r^', "LineWidth", 2)
-% print('-dpng', [fp_out, '_withBaseline']) ;
