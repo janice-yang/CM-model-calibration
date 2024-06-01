@@ -18,8 +18,8 @@ optchanged = false ;
 
 % load runNum runNum 
 % load initials initials
-save(['GA/Results/', 'Run_', int2str(runNum), 'k19output_',int2str(iteration_number)] ...
-  ,'currentpop','currentscore','state','bestparams') ;
+save(['GA/Results/', 'Run_', int2str(runNum), 'k19output_',int2str(iteration_number)], ...
+  'currentpop','currentscore','state','bestparams') ;
 
 % %% Plot results: remove when GA is working
  load x_names names

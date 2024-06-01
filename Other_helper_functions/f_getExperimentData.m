@@ -58,22 +58,42 @@ for i=1:length(protocol_num)
     datamatrix = readmatrix(['ExperimentalData/', filename], ...
         'Sheet', sheetnames{i});
     expT = datamatrix(:, 1) ;
-    stimV = datamatrix(:, end) ;
-    stim_idx = ismembertol(expT(:,1), stimV, 2.5e-7) ;
-    stimtimes = expT(stim_idx) ;
+    stimtimes = datamatrix(:, end) ;
+    stimtimes = stimtimes(~isnan(stimtimes)) ;
 
     if strcmp(datatype, 'APCaT')
         expV = datamatrix(:, 2) ;
         expCaT = datamatrix(:, 3) ;
+        % Average last 5 APs and CaTs
+        n = 5 ;
+        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
+        avgV = zeros(10000, 1) ;
+        avgCaT = zeros(10000, 1) ;
+        for ii=1:length(last_idx)-1
+            addV = expV(last_idx(ii):last_idx(ii+1)) ;
+            avgV(length(addV)+1:end) = [] ;
+            addV(length(avgV)+1:end) = [] ;
+            avgV = avgV + addV ;
+
+            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+            avgCaT(length(addCaT)+1:end) = [] ;
+            addCaT(length(avgCaT)+1:end) = [] ;
+            avgCaT = avgCaT + addCaT ;
+        end
+        expV = avgV ./ n ;
+        expCaT = avgCaT ./ n ;
+        expT = expT(last_idx(end-1):last_idx(end)) ;
+        
         % Noise processing
         erodedSignal = imerode(expV, ones(100, 1)) ; 
         expV = expV - erodedSignal ;
-        expV = medfilt1(expV, 10) ;
+        v = medfilt1(expV, 10) ;
         erodedSignal = imerode(expCaT, ones(100, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        expCaT = medfilt1(expCaT, 10) ;
+        ca = medfilt1(expCaT, 10) ;
 
-        [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
+        keepT = expT - expT(1) ;
+        % [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};
         lengthToExtract = length(keepT);
@@ -91,12 +111,26 @@ for i=1:length(protocol_num)
         Cai_stim_all = [Cai_stim_all; experimental_data.CaT{1}] ; % full CaT data for normalization
     elseif strcmp(datatype, 'AP')
         expV = datamatrix(:, 2) ;
+        % Average last 5 APs
+        n = 5 ;
+        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
+        avgV = zeros(10000, 1) ;
+        for ii=1:length(last_idx)-1
+            addV = expV(last_idx(ii):last_idx(ii+1)) ;
+            avgV(length(addV)+1:end) = [] ;
+            addV(length(avgV)+1:end) = [] ;
+            avgV = avgV + addV ;
+        end
+        expV = avgV ./ n ;
+        expT = expT(last_idx(end-1):last_idx(end)) ;
+       
         % Noise processing
         erodedSignal = imerode(expV, ones(100, 1)) ; 
         expV = expV - erodedSignal ;
-        expV = medfilt1(expV, 10) ;
-        
-        [keepT, v, ~] = APextract_custom(expT,expV,stimtimes);
+        v = medfilt1(expV, 10) ;
+
+        keepT = expT - expT(1) ;
+        % [keepT, v, ~] = APextract_custom(expT,expV,stimtimes);
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP'};
         lengthToExtract = length(keepT);
@@ -114,12 +148,25 @@ for i=1:length(protocol_num)
 
     elseif strcmp(datatype, 'CaT')
         expCaT = datamatrix(:, 2) ;
+        % Average last 5 APs and CaTs
+        n = 5 ;
+        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
+        avgCaT = zeros(10000, 1) ;
+        for ii=1:length(last_idx)-1
+            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+            avgCaT(length(addCaT)+1:end) = [] ;
+            addCaT(length(avgCaT)+1:end) = [] ;
+            avgCaT = avgCaT + addCaT ;
+        end
+        expCaT = avgCaT ./ n ;
+        expT = expT(last_idx(end-1):last_idx(end)) ;
         % Noise processing
         erodedSignal = imerode(expCaT, ones(100, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        expCaT = medfilt1(expCaT, 10) ;
+        ca = medfilt1(expCaT, 10) ;
 
-        [keepT, ca, ~] = CaTextract_custom(expT,expCaT,stimtimes);
+        keepT = expT - expT(1) ;
+        % [keepT, ca, ~] = CaTextract_custom(expT,expCaT,stimtimes);
         
         header = {'Filename', 'Protocol', 'Time_CaT', 'CaT'};
         lengthToExtract = length(keepT);
