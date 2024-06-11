@@ -2,7 +2,7 @@ clear
 close all
 
 addpath('Other_helper_functions')
-realdata = false ;
+realdata = true ;
 method = 'single' ; % single, median, or meanbjob
 
 folders = uigetfile_n_dir([pwd, '/GA/Results/'], 'Select DIRECTORIES containing GA results') ;
@@ -17,9 +17,10 @@ base = strjoin(foldersplit(1:end-1), '/') ; % experiment folder with all runs
 if realdata
     datatype = 'APCaT' ; % 'AP', 'CaT', or 'APCaT'
     exp_file = uigetfile_n_dir([pwd, '/ExperimentalData/'], 'Select file containing VALIDATION data') ;
-    sheetnames = {'Sheet1'} ; % each sheet = 1 validation protocol
-    % sheetnames = {'DMG240_50pDofetilide1nM_0.5Hz'} ; % each sheet = 1 validation protocol
-    protocol_numbers = 29 ;
+    % sheetnames = {'Sheet1'} ; % each sheet = 1 validation protocol
+    sheetnames = {'DMG240_50pDofetilide1nM_0.5Hz'} ; % each sheet = 1 validation protocol
+    % protocol_numbers = 29 ;
+    protocol_numbers = 35 ;
     
     exp_file = exp_file{1} ;
     datamatrix = readmatrix(exp_file) ;
