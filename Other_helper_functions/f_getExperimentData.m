@@ -1,12 +1,13 @@
-function [experimental_dataset] = f_getExperimentData(filename, sheetnames, protocol_num, isNormalized, datatype)
+function [experimental_dataset] = f_getExperimentData(filename, sheetnames, protocol_num, isNormalized, datatype, nbeats)
 %{
 Extract real experimental data for GA fitting.
 Inputs:
-    filename - name of file in ExperimentalData folder (not full path)
-    sheetnames - name(s) of sheet(s) to read
-    protocol_num - integer representing experimental protocol (see below)
-    isNormalized - true if data should be normalized, false if not
-    datatype - AP only ('AP'), CaT only ('CaT'), or both ('APCaT')
+    filename (str) - name of file in ExperimentalData folder (not full path)
+    sheetnames (cell of strs) - name(s) of sheet(s) to read
+    protocol_num (array) - integer representing experimental protocol (see below)
+    isNormalized (bool) - true if data should be normalized, false if not
+    datatype (str) - AP only ('AP'), CaT only ('CaT'), or both ('APCaT')
+    nbeats (array) - number of beats (individual APs and CaTs) in each protocol
 Output:
     experimental_dataset - cell array of tables, to be used in GA
 %}
@@ -58,39 +59,52 @@ for i=1:length(protocol_num)
     datamatrix = readmatrix(['ExperimentalData/', filename], ...
         'Sheet', sheetnames{i});
     expT = datamatrix(:, 1) ;
-    stimtimes = datamatrix(:, end) ;
-    stimtimes = stimtimes(~isnan(stimtimes)) ;
+    % stimtimes = datamatrix(:, end) ;
+    % stimtimes = stimtimes(~isnan(stimtimes)) ;
 
     if strcmp(datatype, 'APCaT')
         expV = datamatrix(:, 2) ;
         expCaT = datamatrix(:, 3) ;
-        % Average last 5 APs and CaTs
-        n = 5 ;
-        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
-        avgV = zeros(10000, 1) ;
-        avgCaT = zeros(10000, 1) ;
-        for ii=1:length(last_idx)-1
-            addV = expV(last_idx(ii):last_idx(ii+1)) ;
-            avgV(length(addV)+1:end) = [] ;
-            addV(length(avgV)+1:end) = [] ;
-            avgV = avgV + addV ;
-
-            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
-            avgCaT(length(addCaT)+1:end) = [] ;
-            addCaT(length(avgCaT)+1:end) = [] ;
-            avgCaT = avgCaT + addCaT ;
-        end
-        expV = avgV ./ n ;
-        expCaT = avgCaT ./ n ;
-        expT = expT(last_idx(end-1):last_idx(end)) ;
         
         % Noise processing
         erodedSignal = imerode(expV, ones(100, 1)) ; 
         expV = expV - erodedSignal ;
-        v = medfilt1(expV, 10) ;
+        expV = medfilt1(expV, 10) ;
         erodedSignal = imerode(expCaT, ones(100, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        ca = medfilt1(expCaT, 10) ;
+        expCaT = medfilt1(expCaT, 10) ;
+
+        % Find upstroke times - used 2nd deriv for better detection
+        d2V = diff(expV, 2) ;
+        [~, stim_idx] = maxk(d2V, nbeats(i)) ; 
+        stim_idx = sort(stim_idx, 'ascend') ;
+        stimtimes = expT(stim_idx) ;
+
+        % Average last 5 APs and CaTs
+        n = 5 ;
+        last_idx = stim_idx(end-n:end) ;
+        avgV = [0;0] ;
+        avgCaT = [0;0] ;
+        for ii=1:length(last_idx)-1
+            addV = expV(last_idx(ii):last_idx(ii+1)) ;
+            if length(addV) > length(avgV)
+                avgV(numel(addV)) = 0 ;
+            elseif length(addV) < length(avgV)
+                addV(numel(avgV)) = 0 ;
+            end
+            avgV = avgV + addV ;
+
+            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+            if length(addCaT) > length(avgCaT)
+                avgCaT(numel(addCaT)) = 0 ;
+            elseif length(addCaT) < length(avgCaT)
+                addCaT(numel(avgCaT)) = 0 ;
+            end
+            avgCaT = avgCaT + addCaT ;
+        end
+        v = avgV ./ n ;
+        ca = avgCaT ./ n ;
+        expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
 
         keepT = expT - expT(1) ;
         % [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
@@ -111,23 +125,46 @@ for i=1:length(protocol_num)
         Cai_stim_all = [Cai_stim_all; experimental_data.CaT{1}] ; % full CaT data for normalization
     elseif strcmp(datatype, 'AP')
         expV = datamatrix(:, 2) ;
-        % Average last 5 APs
-        n = 5 ;
-        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
-        avgV = zeros(10000, 1) ;
-        for ii=1:length(last_idx)-1
-            addV = expV(last_idx(ii):last_idx(ii+1)) ;
-            avgV(length(addV)+1:end) = [] ;
-            addV(length(avgV)+1:end) = [] ;
-            avgV = avgV + addV ;
-        end
-        expV = avgV ./ n ;
-        expT = expT(last_idx(end-1):last_idx(end)) ;
-       
+
         % Noise processing
         erodedSignal = imerode(expV, ones(100, 1)) ; 
         expV = expV - erodedSignal ;
-        v = medfilt1(expV, 10) ;
+        expV = medfilt1(expV, 10) ;
+        % erodedSignal = imerode(expCaT, ones(100, 1)) ; 
+        % expCaT = expCaT - erodedSignal ;
+        % expCaT = medfilt1(expCaT, 10) ;
+
+        % Find upstroke times - used 2nd deriv for better detection
+        d2V = diff(expV, 2) ;
+        [~, stim_idx] = maxk(d2V, nbeats(i)) ; 
+        stim_idx = sort(stim_idx, 'ascend') ;
+        stimtimes = expT(stim_idx) ;
+
+        % Average last 5 APs
+        n = 5 ;
+        last_idx = stim_idx(end-n:end) ;
+        avgV = [0;0] ;
+        % avgCaT = [0;0] ;
+        for ii=1:length(last_idx)-1
+            addV = expV(last_idx(ii):last_idx(ii+1)) ;
+            if length(addV) > length(avgV)
+                avgV(numel(addV)) = 0 ;
+            elseif length(addV) < length(avgV)
+                addV(numel(avgV)) = 0 ;
+            end
+            avgV = avgV + addV ;
+
+            % addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+            % if length(addCaT) > length(avgCaT)
+            %     avgCaT(numel(addCaT)) = 0 ;
+            % elseif length(addCaT) < length(avgCaT)
+            %     addCaT(numel(avgCaT)) = 0 ;
+            % end
+            % avgCaT = avgCaT + addCaT ;
+        end
+        v = avgV ./ n ;
+        % ca = avgCaT ./ n ;
+        expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
 
         keepT = expT - expT(1) ;
         % [keepT, v, ~] = APextract_custom(expT,expV,stimtimes);
@@ -148,22 +185,46 @@ for i=1:length(protocol_num)
 
     elseif strcmp(datatype, 'CaT')
         expCaT = datamatrix(:, 2) ;
-        % Average last 5 APs and CaTs
-        n = 5 ;
-        last_idx = find(ismember(expT, stimtimes(end-n-1:end))) ;
-        avgCaT = zeros(10000, 1) ;
-        for ii=1:length(last_idx)-1
-            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
-            avgCaT(length(addCaT)+1:end) = [] ;
-            addCaT(length(avgCaT)+1:end) = [] ;
-            avgCaT = avgCaT + addCaT ;
-        end
-        expCaT = avgCaT ./ n ;
-        expT = expT(last_idx(end-1):last_idx(end)) ;
+
         % Noise processing
+        % erodedSignal = imerode(expV, ones(100, 1)) ; 
+        % expV = expV - erodedSignal ;
+        % expV = medfilt1(expV, 10) ;
         erodedSignal = imerode(expCaT, ones(100, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        ca = medfilt1(expCaT, 10) ;
+        expCaT = medfilt1(expCaT, 10) ;
+
+        % Find upstroke times - used 2nd deriv for better detection
+        d2CaT = diff(expCaT, 2) ;
+        [~, stim_idx] = maxk(d2CaT, nbeats(i)) ; 
+        stim_idx = sort(stim_idx, 'ascend') ;
+        stimtimes = expT(stim_idx) ;
+
+        % Average last 5 APs
+        n = 5 ;
+        last_idx = stim_idx(end-n:end) ;
+        % avgV = [0;0] ;
+        avgCaT = [0;0] ;
+        for ii=1:length(last_idx)-1
+            % addV = expV(last_idx(ii):last_idx(ii+1)) ;
+            % if length(addV) > length(avgV)
+            %     avgV(numel(addV)) = 0 ;
+            % elseif length(addV) < length(avgV)
+            %     addV(numel(avgV)) = 0 ;
+            % end
+            % avgV = avgV + addV ;
+
+            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+            if length(addCaT) > length(avgCaT)
+                avgCaT(numel(addCaT)) = 0 ;
+            elseif length(addCaT) < length(avgCaT)
+                addCaT(numel(avgCaT)) = 0 ;
+            end
+            avgCaT = avgCaT + addCaT ;
+        end
+        % v = avgV ./ n ;
+        ca = avgCaT ./ n ;
+        expT = expT(last_idx(end)-length(ca):last_idx(end)-1) ;
 
         keepT = expT - expT(1) ;
         % [keepT, ca, ~] = CaTextract_custom(expT,expCaT,stimtimes);

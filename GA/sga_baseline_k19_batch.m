@@ -31,6 +31,7 @@ mkdir('GA/Results', ['Run_',int2str(runNum)]);
 % isNormalized = true ;
 % scaleCaT = false ;
 % datatype = 'APCaT' ;
+% nbeats = [11,11] ;
 
 save GA/curr_cell_protocol protocol_number isNormalized scaleCaT datatype
 % Protocol numbers:
@@ -82,8 +83,8 @@ names = {...
 'PNaK',...        14
 'V_leak',...      15
 'g_CaT',...       16
-'taud_scale',...  17
-'tauf_scale',...  18
+% 'taud_scale',...  17
+% 'tauf_scale',...  18
 } ;
 
 save GA/x_names names
@@ -97,7 +98,7 @@ outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum) ;
 
 %%Load experimental data:
 if realdata
-    experimental_dataset = f_getExperimentData(filename, sheetnames, protocol_number, isNormalized, datatype) ;
+    experimental_dataset = f_getExperimentData(filename, sheetnames, protocol_number, isNormalized, datatype, nbeats) ;
 else
     experimental_dataset = f_getPseudodata(cell_number, protocol_number, isNormalized, sigmaAP, sigmaCaT);
 end
