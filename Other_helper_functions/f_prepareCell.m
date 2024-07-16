@@ -8,19 +8,19 @@ amplitudes = [60, 0, 60, 0, 60, 0, 60, 0, 60, 0,...
               60, 0, 60, 0, 60, 0, 60, 60, 0, ...
               0, 60, 0, 60, 0, 60, ... % 20-25 
               60, 60, 60, 60, 60, 60, ... % 26-31 
-              60, 60, 60, 60, 60] ; % 32-36
+              60, 60, 60, 60, 60, 60, 60] ; % 32-38
 numPulses = [125, 100, 125, 100, 125, 100, 125, 100, 125, 100,...
     125, 100, 125, 100, 125, 100, 167, 125, 100, ...
     100, 100, 100, 100, 100, 100, ...
     200, 125, 50, 200, 125, 50, ...
-    100, 100, 100, 50, 50]; 
+    100, 100, 100, 50, 50, 100, 100]; 
 numPulses = numPulses .* 3 ;
 precedingTime = [799, 999, 799, 999, 799, 999, 799, 999, 799, 999,...
     799, 999, 799, 999, 799, 999, 599, 799, 999, ...
     999, 999, 999, 999, 999, 999, ...
     499, 799, 1999, 499, 799, 1999, ...
-    999, 999, 999, 1999, 1999];
-pulseDurations = ones(1, 36); 
+    999, 999, 999, 1999, 1999, 999, 999];
+pulseDurations = ones(1, 38); 
 
 % Use default initial parameters if none supplied, otherwise use supplied params
 if ~exist('init','var')
@@ -31,7 +31,7 @@ end
 
 setUpPacingProtocol(k19, amplitudes(protocol_number), numPulses(protocol_number),...
     precedingTime(protocol_number), pulseDurations(protocol_number)) ;
-setEnvironment(k19, T, Nao, Cao, Ko) ;
+setEnvironment(k19, T, Nao, Cao, Ko) ;  % Baseline environment
 
 % Caohigh paced & spont
 if protocol_number == 1 || protocol_number == 2
@@ -81,11 +81,11 @@ if protocol_number == 15 || protocol_number == 16
     setEnvironment(k19, T, Nao, Cao, 5.0) ;
 end
 
-% Nao 143.0 mM (experimental data)
-if protocol_number >= 20
-    Nao = 143.0 ;
-    setEnvironment(k19, T, Nao, Cao, Ko) ;
-end
+% % Nao 147.0 mM (experimental data)
+% if protocol_number >= 20
+%     Nao = 147.0 ;
+%     setEnvironment(k19, T, Nao, Cao, Ko) ;
+% end
 
 if protocol_number == 22 || protocol_number == 23 % 40% IKr block (1nM)
     ikrblock = ones(1,16);
@@ -93,19 +93,19 @@ if protocol_number == 22 || protocol_number == 23 % 40% IKr block (1nM)
     setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)
 end
 
-if protocol_number == 24 || protocol_number == 25
+if protocol_number == 24 || protocol_number == 25 % Hypocalcemia
     setEnvironment(k19, T, Nao, 1.0, Ko) ;
 end
 
-if protocol_number == 26 || protocol_number == 27 || protocol_number == 28
-    setEnvironment(k19, T, Nao, 1.8, Ko) ;
-end
-if protocol_number == 29 || protocol_number == 30 || protocol_number == 31
+% if protocol_number == 26 || protocol_number == 27 || protocol_number == 28
+%     setEnvironment(k19, T, Nao, 1.8, Ko) ;
+% end
+if protocol_number == 29 || protocol_number == 30 || protocol_number == 31 %Hypocalcemia
     setEnvironment(k19, T, Nao, 1.0, Ko) ;
 end
 
-if protocol_number == 32 || protocol_number == 36
-    setEnvironment(k19, T, 100.0, Cao, Ko) ; 
+if protocol_number == 32 || protocol_number == 36 % Hyponatremia 70%
+    setEnvironment(k19, T, 105.7, Cao, Ko) ; 
 end
 if protocol_number == 34 % 50% ICaL block
     icalblock = ones(1,16);
@@ -118,4 +118,14 @@ if protocol_number == 35 % 40% IKr block
     setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
 end
 
+if protocol_number == 37 % 70% ICaL block?
+    icalblock = ones(1,16);
+    icalblock(3) = 0.3;
+    setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000) 
 end
+if protocol_number == 38 % 90% ICaL block?
+    icalblock = ones(1,16);
+    icalblock(3) = 0.1;
+    setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
+end
+

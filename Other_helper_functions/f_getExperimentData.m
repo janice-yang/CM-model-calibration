@@ -51,6 +51,9 @@ end
 disp('loading new dataset/s...')
 
 %% Read in multiple protocols
+n_filter = 5 ;
+n_erode = 600 ;
+n_diff = 1 ;
 t_all = [] ;
 V_stim_all = []; % full AP data for normalization
 Cai_stim_all = []; % full CaT data for normalation
@@ -67,15 +70,15 @@ for i=1:length(protocol_num)
         expCaT = datamatrix(:, 3) ;
         
         % Noise processing
-        erodedSignal = imerode(expV, ones(100, 1)) ; 
+        erodedSignal = imerode(expV, ones(n_erode, 1)) ; 
         expV = expV - erodedSignal ;
-        expV = medfilt1(expV, 10) ;
-        erodedSignal = imerode(expCaT, ones(100, 1)) ; 
+        expV = medfilt1(expV, n_filter) ;
+        erodedSignal = imerode(expCaT, ones(n_erode, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        expCaT = medfilt1(expCaT, 10) ;
+        expCaT = medfilt1(expCaT, n_filter) ;
 
-        % Find upstroke times - used 2nd deriv for better detection
-        d2V = diff(expV, 2) ;
+        % Find upstroke times 
+        d2V = diff(expV, n_diff) ;
         [~, stim_idx] = maxk(d2V, nbeats(i)) ; 
         stim_idx = sort(stim_idx, 'ascend') ;
         stimtimes = expT(stim_idx) ;
@@ -127,15 +130,15 @@ for i=1:length(protocol_num)
         expV = datamatrix(:, 2) ;
 
         % Noise processing
-        erodedSignal = imerode(expV, ones(100, 1)) ; 
+        erodedSignal = imerode(expV, ones(n_erode, 1)) ; 
         expV = expV - erodedSignal ;
-        expV = medfilt1(expV, 10) ;
-        % erodedSignal = imerode(expCaT, ones(100, 1)) ; 
+        expV = medfilt1(expV, n_filter) ;
+        % erodedSignal = imerode(expCaT, ones(n_erode, 1)) ; 
         % expCaT = expCaT - erodedSignal ;
         % expCaT = medfilt1(expCaT, 10) ;
 
-        % Find upstroke times - used 2nd deriv for better detection
-        d2V = diff(expV, 2) ;
+        % Find upstroke times 
+        d2V = diff(expV, n_diff) ;
         [~, stim_idx] = maxk(d2V, nbeats(i)) ; 
         stim_idx = sort(stim_idx, 'ascend') ;
         stimtimes = expT(stim_idx) ;
@@ -187,15 +190,15 @@ for i=1:length(protocol_num)
         expCaT = datamatrix(:, 2) ;
 
         % Noise processing
-        % erodedSignal = imerode(expV, ones(100, 1)) ; 
+        % erodedSignal = imerode(expV, ones(n_erode, 1)) ; 
         % expV = expV - erodedSignal ;
         % expV = medfilt1(expV, 10) ;
-        erodedSignal = imerode(expCaT, ones(100, 1)) ; 
+        erodedSignal = imerode(expCaT, ones(n_erode, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        expCaT = medfilt1(expCaT, 10) ;
+        expCaT = medfilt1(expCaT, n_filter) ;
 
-        % Find upstroke times - used 2nd deriv for better detection
-        d2CaT = diff(expCaT, 2) ;
+        % Find upstroke times 
+        d2CaT = diff(expCaT, n_diff) ;
         [~, stim_idx] = maxk(d2CaT, nbeats(i)) ; 
         stim_idx = sort(stim_idx, 'ascend') ;
         stimtimes = expT(stim_idx) ;
