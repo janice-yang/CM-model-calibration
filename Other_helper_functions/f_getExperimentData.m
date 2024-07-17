@@ -51,7 +51,7 @@ end
 disp('loading new dataset/s...')
 
 %% Read in multiple protocols
-n_filter = 5 ;
+n_filter = 15 ;
 n_erode = 600 ;
 n_diff = 1 ;
 t_all = [] ;
