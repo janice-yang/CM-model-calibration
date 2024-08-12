@@ -51,8 +51,8 @@ end
 disp('loading new dataset/s...')
 
 %% Read in multiple protocols
-n_filter = 15 ;
-n_erode = 600 ;
+n_filter = 5 ;
+n_erode = 1000 ;
 n_diff = 1 ;
 t_all = [] ;
 V_stim_all = []; % full AP data for normalization
@@ -69,13 +69,26 @@ for i=1:length(protocol_num)
         expV = datamatrix(:, 2) ;
         expCaT = datamatrix(:, 3) ;
         
+        % Find upstroke times 
+        d2V = diff(expV, n_diff) ;
+        [~, stim_idx] = maxk(d2V, nbeats) ; 
+        stim_idx = sort(stim_idx, 'ascend') ;
+        stimtimes = expT(stim_idx) ;
+        % Last 5
+        n = 5 ;
+        start_idx = stim_idx(end-5) ;
+        expT = expT(start_idx:end) ;
+        expT = expT - expT(1) ;
+        expV = expV(start_idx:end) ;
+        expCaT = expCaT(start_idx:end) ; 
+
         % Noise processing
         erodedSignal = imerode(expV, ones(n_erode, 1)) ; 
         expV = expV - erodedSignal ;
-        expV = medfilt1(expV, n_filter) ;
+        % expV = medfilt1(expV, n_filter) ;
         erodedSignal = imerode(expCaT, ones(n_erode, 1)) ; 
         expCaT = expCaT - erodedSignal ;
-        expCaT = medfilt1(expCaT, n_filter) ;
+        % expCaT = medfilt1(expCaT, n_filter) ;
 
         % Find upstroke times 
         d2V = diff(expV, n_diff) ;
@@ -107,10 +120,15 @@ for i=1:length(protocol_num)
         end
         v = avgV ./ n ;
         ca = avgCaT ./ n ;
-        expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
+        % expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
 
-        keepT = expT - expT(1) ;
+        % keepT = expT - expT(1) ;
+        keepT = linspace(0, expT(last_idx(end)) - expT(last_idx(end-1)), length(v)) ;
         % [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
+
+        % Filter
+        v = medfilt1(v, n_filter) ;
+        ca = medfilt1(ca, n_filter) ;
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};
         lengthToExtract = length(keepT);

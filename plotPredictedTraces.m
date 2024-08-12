@@ -3,13 +3,15 @@ close all
 
 realdata = true ; 
 % filename = '20220113_paced.xlsx' ; % experimental data file
-filename = 'TestDavidDataProcessed.xlsx' ;
-protocol_number = [32,33,34] ;
+filename = 'TestDavidDataProcessed2.xlsx' ;
+cell_number = 4 ;
+protocol_number = [32,33] ;
 % sheetnames = {'1.0Ca 1Hz','1.8Ca 1Hz','1.8Ca 1.25Hz'} ;
-sheetnames = {'DMG240_70Na_1Hz', 'DMG240_100Na_1Hz', 'DMG240_50pNifedipine50nM_1Hz'} ;
-% sheetnames = {'DMG240_50pNifedipine50nM_1Hz'} ;
-nbeats = [11,11,11] ;
-isNormalized = true ; 
+% sheetnames = {'1.0Ca 1Hz'} ;
+sheetnames = {'DMG240_70Na_1Hz', 'DMG240_100Na_1Hz'} ;
+% sheetnames = {'DMG240_50pNifedipine50nM_1Hz'} ;d
+nbeats = [11,11] ;
+isNormalized = true ;  
 datatype = 'APCaT' ; 
 logfactor = 2 ;
 
@@ -29,7 +31,7 @@ protocol_str = protocol_str{1} ;
 
 % load([folders{1}, '/Details.mat'], 'protocol_number') ;
 save GA/curr_cell_protocol.mat protocol_number isNormalized
-load GA/x_names.mat
+load GA/x_names.mat names
 
 % For storing experimental data
 expT = cell(1, length(protocol_number)) ;
@@ -73,7 +75,7 @@ if realdata
         expCai{j} = Cai ;
     end
 else 
-    load([folders{1}, '/Details.mat'], 'cell_number', 'protocol_number') ;
+    % load([folders{1}, '/Details.mat'], 'cell_number', 'protocol_number') ;
     [experimental_dataset] = f_getPseudodata(cell_number, protocol_number, isNormalized, 0, 0) ;
     set(gcf, 'Position', [0 0 length(protocol_number)*400 400])
     for j=1:length(protocol_number)
