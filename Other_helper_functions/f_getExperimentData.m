@@ -96,43 +96,44 @@ for i=1:length(protocol_num)
         stim_idx = sort(stim_idx, 'ascend') ;
         stimtimes = expT(stim_idx) ;
 
-        % Average last 5 APs and CaTs
-        n = 5 ;
-        last_idx = stim_idx(end-n:end) ;
-        avgV = [0;0] ;
-        avgCaT = [0;0] ;
-        for ii=1:length(last_idx)-1
-            addV = expV(last_idx(ii):last_idx(ii+1)) ;
-            if length(addV) > length(avgV)
-                avgV(numel(addV)) = 0 ;
-            elseif length(addV) < length(avgV)
-                addV(numel(avgV)) = 0 ;
-            end
-            avgV = avgV + addV ;
-
-            addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
-            if length(addCaT) > length(avgCaT)
-                avgCaT(numel(addCaT)) = 0 ;
-            elseif length(addCaT) < length(avgCaT)
-                addCaT(numel(avgCaT)) = 0 ;
-            end
-            avgCaT = avgCaT + addCaT ;
-        end
-        v = avgV ./ n ;
-        ca = avgCaT ./ n ;
-        % expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
-
-        % keepT = expT - expT(1) ;
-        keepT = linspace(0, expT(last_idx(end)) - expT(last_idx(end-1)), length(v)) ;
-        % [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
+        % % Average last 5 APs and CaTs
+        % n = 5 ;
+        % last_idx = stim_idx(end-n:end) ;
+        % avgV = [0;0] ;
+        % avgCaT = [0;0] ;
+        % for ii=1:length(last_idx)-1
+        %     addV = expV(last_idx(ii):last_idx(ii+1)) ;
+        %     if length(addV) > length(avgV)
+        %         avgV(numel(addV)) = 0 ;
+        %     elseif length(addV) < length(avgV)
+        %         addV(numel(avgV)) = 0 ;
+        %     end
+        %     avgV = avgV + addV ;
+        % 
+        %     addCaT = expCaT(last_idx(ii):last_idx(ii+1)) ;
+        %     if length(addCaT) > length(avgCaT)
+        %         avgCaT(numel(addCaT)) = 0 ;
+        %     elseif length(addCaT) < length(avgCaT)
+        %         addCaT(numel(avgCaT)) = 0 ;
+        %     end
+        %     avgCaT = avgCaT + addCaT ;
+        % end
+        % v = avgV ./ n ;
+        % ca = avgCaT ./ n ;
+        % % expT = expT(last_idx(end)-length(v):last_idx(end)-1) ;
+        % 
+        % % keepT = expT - expT(1) ;
+        % keepT = linspace(0, expT(last_idx(end)) - expT(last_idx(end-1)), length(v)) ;
+        % % [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes);
 
         % Filter
-        v = medfilt1(v, n_filter) ;
-        ca = medfilt1(ca, n_filter) ;
+        v = medfilt1(expV, n_filter) ;
+        ca = medfilt1(expCaT, n_filter) ;
+        keepT = expT ;
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};
         lengthToExtract = length(keepT);
-        experimental_data = {repmat(filename,lengthToExtract,1), ones(lengthToExtract, 1)*protocol_num(i), keepT', v, keepT', ca};
+        experimental_data = {repmat(filename,lengthToExtract,1), ones(lengthToExtract, 1)*protocol_num(i), keepT, v, keepT, ca};
         experimental_data = cell2table(experimental_data, 'VariableNames', header) ;
         experimental_dataset{i} = experimental_data ; 
         % Keep track of length of experiment from each protocol
