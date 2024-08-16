@@ -133,7 +133,7 @@ for i=1:length(protocol_num)
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};
         lengthToExtract = length(keepT);
-        experimental_data = {repmat(filename,lengthToExtract,1), ones(lengthToExtract, 1)*protocol_num(i), keepT, v, keepT, ca};
+        experimental_data = {repmat(filename,lengthToExtract,1), ones(lengthToExtract, 1)*protocol_num(i), keepT', v, keepT', ca};
         experimental_data = cell2table(experimental_data, 'VariableNames', header) ;
         experimental_dataset{i} = experimental_data ; 
         % Keep track of length of experiment from each protocol
