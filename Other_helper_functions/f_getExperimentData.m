@@ -71,7 +71,7 @@ for i=1:length(protocol_num)
         
         % Find upstroke times 
         d2V = diff(expV, n_diff) ;
-        [~, stim_idx] = maxk(d2V, nbeats) ; 
+        [~, stim_idx] = maxk(d2V, nbeats(i)) ; 
         stim_idx = sort(stim_idx, 'ascend') ;
         stimtimes = expT(stim_idx) ;
         % Last 5
