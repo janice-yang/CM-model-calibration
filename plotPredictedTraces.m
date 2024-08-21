@@ -3,14 +3,16 @@ close all
 
 realdata = true ; 
 % filename = '20220113_paced.xlsx' ; % experimental data file
+% filename = 'DMG240.xlsx' ;
 filename = 'TestDavidDataProcessed2.xlsx' ;
 cell_number = 4 ;
-protocol_number = [32,33] ;
+protocol_number = [32] ;
 % sheetnames = {'1.0Ca 1Hz','1.8Ca 1Hz','1.8Ca 1.25Hz'} ;
-% sheetnames = {'1.0Ca 1Hz'} ;
-sheetnames = {'DMG240_70Na_1Hz', 'DMG240_100Na_1Hz'} ;
-% sheetnames = {'DMG240_50pNifedipine50nM_1Hz'} ;d
-nbeats = [11,11] ;
+% sheetnames = {'1.8Ca 1Hz'} ;
+sheetnames = {'DMG240_70Na_1Hz'} ;
+% sheetnames = {'DMG240_50pNifedipine50nM_1Hz'} ;
+nbeats = [11] ;
+n_extract = 5 ;
 isNormalized = true ;  
 datatype = 'APCaT' ; 
 logfactor = 2 ;
@@ -113,9 +115,9 @@ for i=1:length(folders)
     for j=1:length(protocol_number)
         if sum(t_stim{j})
             if ~realdata
-                [t, V, Cai,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j});
+                [t, V, Cai,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j},n_extract);
             else
-                [t, V, Cai,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},[]);
+                [t, V, Cai,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},[],n_extract);
             end
         figure(single)
         if strcmp(datatype, 'AP') || strcmp(datatype, 'APCaT')

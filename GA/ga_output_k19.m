@@ -1,4 +1,4 @@
-function [state,options,optchanged] = ga_output_k19(options,state,flag,runNum) 
+function [state,options,optchanged] = ga_output_k19(options,state,flag,runNum,n) 
 persistent iteration_number
 
 if isempty(iteration_number)
@@ -34,7 +34,7 @@ save(['GA/Results/', 'Run_', int2str(runNum), 'k19output_',int2str(iteration_num
      handle = gcf ;
      for j=1:length(protocol_number)
         if sum(t_stim{j})
-            [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j});
+            [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j},n);
 
             % Stop if no AP was extracted, write culprit conductances to file
             if (~isvector(keepT) || ~isvector(V) || ~isvector(CaT))

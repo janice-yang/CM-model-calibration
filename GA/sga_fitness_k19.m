@@ -1,6 +1,6 @@
 % Fitness Function
 
-function [fitness] = sga_fitness_k19(x,runNum) % Takes inputs from main script initial population and returns error values as output
+function [fitness] = sga_fitness_k19(x,runNum,n) % Takes inputs from main script initial population and returns error values as output
 %% Standard Opening
 
 format compact
@@ -29,7 +29,7 @@ load experimental_dataset experimental_dataset
 y = zeros(1, 2) ;
 for i=1:length(protocol_number)
     if sum(t_stim{i})
-        [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{i}, V_stim{i},Cai_stim{i},stimtimes{i});
+        [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{i}, V_stim{i},Cai_stim{i},stimtimes{i},n);
 
         % Stop if no AP was extracted, write culprit conductances to file
         if (~isvector(keepT) || ~isvector(V) || ~isvector(CaT))

@@ -1,5 +1,5 @@
 
-function [keepT,keepV,keepCai,tinit,errorcode] = waveform_extract_new(t,V,Cai,stimtimes) 
+function [keepT,keepV,keepCai,tinit,errorcode] = waveform_extract_new(t,V,Cai,stimtimes,n) 
 
 %%%% When there's an error, the function still needs to return waveforms
 %%%% When error, return last 2 seconds of the waveform (defined by duration_default)
@@ -46,7 +46,7 @@ if isempty(stimtimes)
         return
     end
     
-    if ( length(dices_up) < 2 && length(dices_down) < 2 ) % == 1 for single AP
+    if ( length(dices_up) < n && length(dices_down) < n ) % check if there are enough beats to extract
         keepT = t ;
         keepV = V ;
         keepCai = Cai ;
@@ -55,13 +55,13 @@ if isempty(stimtimes)
     end
     
     lastup = (max(dices_up) > max(dices_down)) ;
-    if (lastup && length(dices_down) >= 2) % 2 for single AP, 3 for double
+    if (lastup && length(dices_down) >= n+1) % 2 for single AP, 3 for double
       dexrange = dices_down(end):dices_up(end) ;
       [~,dex_end] = min(V(dexrange)) ;
       dex_end = dex_end + min(dexrange) ;
       
-      dexrange = dices_down(end-1):dices_up(end-1) ;
-%       dexrange = dices_down(end-2):dices_up(end-2) ;
+      % dexrange = dices_down(end-1):dices_up(end-1) ;
+      dexrange = dices_down(end-n):dices_up(end-n) ;
       [~,dex_begin] = min(V(dexrange)) ;
       dex_begin = dex_begin + min(dexrange) ;
 
@@ -69,13 +69,13 @@ if isempty(stimtimes)
       keepV = V(dex_begin:dex_end) ;
       keepCai = Cai(dex_begin:dex_end) ;
       errorcode = 0 ;
-    elseif (~lastup && length(dices_down) >= 3) % 3 for single AP, 4 for double
+    elseif (~lastup && length(dices_down) >= n+2) % 3 for single AP, 4 for double
       dexrange = dices_down(end-1):dices_up(end) ;
       [~,dex_end] = min(V(dexrange)) ;
       dex_end = dex_end + min(dexrange) ;
       
-      dexrange = dices_down(end-2):dices_up(end-1) ;
-%       dexrange = dices_down(end-3):dices_up(end-2) ;
+      % dexrange = dices_down(end-2):dices_up(end-1) ;
+      dexrange = dices_down(end-(n+1)):dices_up(end-n) ;
       [~,dex_begin] = min(V(dexrange)) ;
       dex_begin = dex_begin + min(dexrange) ;
 
@@ -119,11 +119,12 @@ else
 %   stimtimes = stimtimes / 1000 ; % seconds
 %   [~,dex_t] = min(abs((t+295000)-stimtimes(end-1))) ;    % 2nd to last AP
 %   [~,dex_t_end] = min(abs((t+295000)-stimtimes(end))) ; % end for single AP extraction   
-  [~,dex_t] = min(abs(t-stimtimes(end-1))) ;    % 2nd to last AP
-  [~,dex_t_end] = min(abs(t-stimtimes(end))) ; % end for single AP extraction   
-  keepT = t(dex_t:dex_t_end) ;
-  keepV = V(dex_t:dex_t_end) ;
-  keepCai = Cai(dex_t:dex_t_end) ;
+  % [~,dex_t] = min(abs(t-stimtimes(end-1))) ;    % 2nd to last AP
+  [~,dex_t] = min(abs(t-stimtimes(end-n))) ;    % n-th to last AP
+  % [~,dex_t_end] = min(abs(t-stimtimes(end))) ; % end for single AP extraction   
+  keepT = t(dex_t:end) ;
+  keepV = V(dex_t:end) ;
+  keepCai = Cai(dex_t:end) ;
 end % IF, difference between stimulated & spontaneously beating cells
 
 %%%%%%%%%%%%%%%%%%%%
