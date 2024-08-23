@@ -91,8 +91,8 @@ nvars = length(names) ;
 
 % Fitness Function (includes evaluation of model)
 % fitnessfcn = @sga_fitness_k19;
-fitnessfcn = @(x)sga_fitness_k19(x, runNum, 2); 
-outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 2) ;
+fitnessfcn = @(x)sga_fitness_k19(x, runNum, 3); 
+outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 3) ;
 
 %%Load experimental data:
 if realdata
@@ -166,7 +166,7 @@ x_conductance = (2.^params);
 figure 
 p = 1 ;
 for j=1:length(protocol_number)
-    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j});
+    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 3);
     
     if strcmp(datatype,'AP') || strcmp(datatype,'APCaT')
         % Align ends of exp and simulated extracted waveforms
