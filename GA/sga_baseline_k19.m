@@ -55,9 +55,10 @@ sigmaCaT = 0.0 ; % SD of noise to be added to pseudodata (CaT)
 
 % FOR IN VITRO DATA:
 realdata = true ;
-filename = 'TestDavidDataProcessed.xlsx' ; % Spreadsheet with data in 2-3 columns (Time, AP, CaT)
-sheetnames = {'DMG240_70Na_1Hz'} ;
-protocol_number = [32] ; % for GA simulations
+filename = '20220113_paced.xlsx' ; % Spreadsheet with data in 2-3 columns (Time, AP, CaT)
+sheetnames = {'1.8Ca 1Hz'} ;
+protocol_number = [21] ; % for GA simulations
+nbeats = [11] ;
 
 %%
 save GA/curr_cell_protocol protocol_number isNormalized scaleCaT datatype sigmaAP sigmaCaT
@@ -91,12 +92,12 @@ nvars = length(names) ;
 
 % Fitness Function (includes evaluation of model)
 % fitnessfcn = @sga_fitness_k19;
-fitnessfcn = @(x)sga_fitness_k19(x, runNum, 3); 
-outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 3) ;
+fitnessfcn = @(x)sga_fitness_k19(x, runNum, 2); 
+outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 2) ;
 
 %%Load experimental data:
 if realdata
-    experimental_dataset = f_getExperimentData(filename, sheetnames, protocol_number, isNormalized, datatype) ;
+    experimental_dataset = f_getExperimentData(filename, sheetnames, protocol_number, isNormalized, datatype, nbeats) ;
 else
     experimental_dataset = f_getPseudodata(cell_number, protocol_number, isNormalized, sigmaAP, sigmaCaT);
 end
@@ -166,7 +167,7 @@ x_conductance = (2.^params);
 figure 
 p = 1 ;
 for j=1:length(protocol_number)
-    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 3);
+    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 2);
     
     if strcmp(datatype,'AP') || strcmp(datatype,'APCaT')
         % Align ends of exp and simulated extracted waveforms
