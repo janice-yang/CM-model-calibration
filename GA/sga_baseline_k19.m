@@ -38,7 +38,7 @@ runNum = seed ;
 mkdir('GA/Results', ['Run_',int2str(runNum)]);
 save(['GA/Results/Run_', int2str(runNum), '/runNum.mat'], 'runNum')
 
-isNormalized = true ; % scale dataset from 0 (min) to 1 (max) when calibrating parameters
+isNormalized = false ; % scale dataset from 0 (min) to 1 (max) when calibrating parameters
 if isNormalized
     scaleCaT = false ;
 else
@@ -48,16 +48,18 @@ datatype = 'APCaT' ; % 'APonly', 'CaTonly', or 'APCaT' for calibrating to both
 
 % FOR IN SILICO DATA:
 % realdata = false ; 
-cell_number = 1 ; % cell number from in silico dataset
-protocol_number = [19] ; % protocol number from in silico dataset
-sigmaAP = 0.0 ; % SD of noise to be added to pseudodata (AP)
-sigmaCaT = 0.0 ; % SD of noise to be added to pseudodata (CaT)
+cell_number = 15 ; % cell number from in silico dataset
+protocol_number = [4,19,5] ; % protocol number from in silico dataset
+sigmaAP = 0.02 ; % SD of noise to be added to pseudodata (AP)
+sigmaCaT = 0.02 ; % SD of noise to be added to pseudodata (CaT)
 
 % FOR IN VITRO DATA:
 realdata = true ;
-filename = '20220113_paced.xlsx' ; % Spreadsheet with data in 2-3 columns (Time, AP, CaT)
-sheetnames = {'1.8Ca 1Hz'} ;
-protocol_number = [21] ; % for GA simulations
+% filename = '20220113_paced.xlsx' ; % Spreadsheet with data in 2-3 columns (Time, AP, CaT)
+filename = 'DMG240.xlsx'
+% sheetnames = {'1.8Ca 1Hz'} ;
+sheetnames = {'DMG240_100Na_1Hz'} ;
+protocol_number = [33] ; % for GA simulations
 nbeats = [11] ;
 
 %%
@@ -92,8 +94,8 @@ nvars = length(names) ;
 
 % Fitness Function (includes evaluation of model)
 % fitnessfcn = @sga_fitness_k19;
-fitnessfcn = @(x)sga_fitness_k19(x, runNum, 2); 
-outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 2) ;
+fitnessfcn = @(x)sga_fitness_k19(x, runNum, 1); 
+outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 1) ;
 
 %%Load experimental data:
 if realdata
@@ -104,7 +106,7 @@ end
 %%
 % Population Size and Variation
 
-popsize = 20 ; 
+popsize = 50 ; 
 
 % lower and upper bounds
   lb = ones(nvars,1)*-2;   
@@ -122,7 +124,7 @@ initpop = 4*rand(popsize, nvars)-1; %uniform distribution from -2 to 2 --> multi
 
 options = optimoptions(@ga, ...
     'SelectionFcn', {@selectiontournament, 4}, ... % was 8
-    'UseParallel', true,...
+    'UseParallel', false,...
     'CrossoverFcn', {@crossoverscattered},... 
     'CrossoverFraction', 0.85, ...
     'MutationFcn', {@mutationadaptfeasible}, ...
@@ -132,7 +134,7 @@ options = optimoptions(@ga, ...
     'PlotFcn', {@gaplotscorediversity, @gaplotbestf, @gaplotbestindiv}, ...
     'OutputFcn', outputfcn, ... 
     'Display', 'iter',...
-    'MaxGenerations', 5,... % 100
+    'MaxGenerations', 10,... % 100
     'MaxStallGenerations', 5);   % if there is no change in the best fitness value for some number of generations, GA stops
 
 save(['GA/Results/Run_',int2str(runNum), '/Details'], 'cell_number','protocol_number', 'isNormalized', 'scaleCaT', 'options', 'popsize');
@@ -167,7 +169,7 @@ x_conductance = (2.^params);
 figure 
 p = 1 ;
 for j=1:length(protocol_number)
-    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 2);
+    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 1);
     
     if strcmp(datatype,'AP') || strcmp(datatype,'APCaT')
         % Align ends of exp and simulated extracted waveforms
@@ -184,7 +186,7 @@ for j=1:length(protocol_number)
         hold on
         plot(exp_T_V,exp_V,'Color','red','LineWidth',2)
         title(['Protocol ',int2str(protocol_number(j)),' Action Potential'])
-        legend('Prediction','Observation')
+        legend('Calibrated model','Observation')
         set(gca,'FontSize',12)
     end
     

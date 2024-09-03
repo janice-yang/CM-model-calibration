@@ -124,7 +124,7 @@ for i=1:length(protocol_num)
         % 
         % % keepT = expT - expT(1) ;
         % keepT = linspace(0, expT(last_idx(end)) - expT(last_idx(end-1)), length(v)) ;
-        [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes,3) ; % Extract last n beats
+        [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes,1) ; % Extract last n beats
 
         % Filter
         v = medfilt1(v, n_filter) ;

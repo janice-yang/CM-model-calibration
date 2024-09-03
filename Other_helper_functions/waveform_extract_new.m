@@ -8,6 +8,8 @@ errorcode = 0 ;
 
 tinit = 0 ;
 
+i_keep = 10 ; % number of points before upstroke to keep
+
 duration_default = 2000 ;
 if (max(t) > duration_default)
   [~,min_t_dex] = min(t - duration_default) ;
@@ -65,9 +67,9 @@ if isempty(stimtimes)
       [~,dex_begin] = min(V(dexrange)) ;
       dex_begin = dex_begin + min(dexrange) ;
 
-      keepT = t(dex_begin:dex_end) ;
-      keepV = V(dex_begin:dex_end) ;
-      keepCai = Cai(dex_begin:dex_end) ;
+      keepT = t(dex_begin-i_keep:dex_end) ;
+      keepV = V(dex_begin-i_keep:dex_end) ;
+      keepCai = Cai(dex_begin-i_keep:dex_end) ;
       errorcode = 0 ;
     elseif (~lastup && length(dices_down) >= n+2) % 3 for single AP, 4 for double
       dexrange = dices_down(end-1):dices_up(end) ;
@@ -79,9 +81,9 @@ if isempty(stimtimes)
       [~,dex_begin] = min(V(dexrange)) ;
       dex_begin = dex_begin + min(dexrange) ;
 
-      keepT = t(dex_begin:dex_end) ;
-      keepV = V(dex_begin:dex_end) ;
-      keepCai = Cai(dex_begin:dex_end) ;
+      keepT = t(dex_begin-i_keep:dex_end) ;
+      keepV = V(dex_begin-i_keep:dex_end) ;
+      keepCai = Cai(dex_begin-i_keep:dex_end) ;
       errorcode = 0 ;
     end
     
@@ -122,20 +124,21 @@ else
   % [~,dex_t] = min(abs(t-stimtimes(end-1))) ;    % 2nd to last AP
   [~,dex_t] = min(abs(t-stimtimes(end-n))) ;    % n-th to last AP
   % [~,dex_t_end] = min(abs(t-stimtimes(end))) ; % end for single AP extraction   
-  keepT = t(dex_t:end) ;
-  keepV = V(dex_t:end) ;
-  keepCai = Cai(dex_t:end) ;
+  keepT = t(dex_t-i_keep:end) ;
+  keepV = V(dex_t-i_keep:end) ;
+  keepCai = Cai(dex_t-i_keep:end) ;
 end % IF, difference between stimulated & spontaneously beating cells
 
 %%%%%%%%%%%%%%%%%%%%
 % % AP duration calculation common to both stimulated & spontaneous
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Vderiv = [keepV(2:end);keepV(end)] - keepV ;
-% [~,dexmax] = max(Vderiv) ;
-[~,dexmax] = maxk(Vderiv,5) ;
-dexmax = min(dexmax) ;
-tinit = keepT(dexmax) ;
+% Vderiv = [keepV(2:end);keepV(end)] - keepV ;
+% % [~,dexmax] = max(Vderiv) ;
+% [~,dexmax] = maxk(Vderiv,5) ;
+% dexmax = min(dexmax) ;
+% tinit = keepT(dexmax) ;
+tinit = keepT(1) ;
     
 keepT = keepT - tinit ;
 

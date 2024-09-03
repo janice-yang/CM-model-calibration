@@ -93,8 +93,8 @@ nvars = length(names) ;
 
 % Fitness Function (includes evaluation of model)
 % fitnessfcn = @sga_fitness_k19;
-fitnessfcn = @(x)sga_fitness_k19(x, runNum, 2); 
-outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 2) ;
+fitnessfcn = @(x)sga_fitness_k19(x, runNum, 1); 
+outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 1) ;
 
 %%Load experimental data:
 if realdata
@@ -135,7 +135,7 @@ options = optimoptions(@ga, ...
     'OutputFcn', outputfcn, ... 
     'Display', 'iter',...
     'MaxGenerations', 20,... % 100
-    'MaxStallGenerations', 20);   % if there is no change in the best fitness value for some number of generations, GA stops
+    'MaxStallGenerations', 5);   % if there is no change in the best fitness value for some number of generations, GA stops
 
 if realdata
     save(['GA/Results/Run_',int2str(runNum), '/Details'], 'filename', 'sheetnames', 'protocol_number', 'isNormalized', 'datatype', 'scaleCaT', 'options', 'popsize', 'runNum');
@@ -168,7 +168,7 @@ x_conductance = (2.^params);
 figure 
 p = 1 ;
 for j=1:length(protocol_number)
-    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 2);
+    [keepT, V, CaT,tinit,errorcode] = waveform_extract_new(t_stim{j}, V_stim{j},Cai_stim{j},stimtimes{j}, 1);
     
     if strcmp(datatype,'AP') || strcmp(datatype,'APCaT')
         % Align ends of exp and simulated extracted waveforms
