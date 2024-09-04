@@ -87,31 +87,6 @@ if isempty(stimtimes)
       errorcode = 0 ;
     end
     
-%     % Try to extract from upstroke instead
-%     time = 0:2:t(end) ;
-%     V = interp1(t, V, time)' ;
-%     Cai = interp1(t, Cai, time)' ;
-%     t = time' ;
-%     Vderiv = [diff(V);0] ;
-%     stim_idx = find(abs(max(Vderiv) - Vderiv) < 20) ;
-%     if length(stim_idx) < 2
-%         keepT = t ;
-%         keepV = V ;
-%         keepCai = Cai ;
-%         errorcode = 1 ;
-%         return
-%     elseif length(stim_idx) == 2
-%         keepT = t(stim_idx(end-1):stim_idx(end)) ;
-%         keepV = V(stim_idx(end-1):stim_idx(end)) ;
-%         keepCai = Cai(stim_idx(end-1):stim_idx(end)) ;
-%         errorcode = 2 ;  
-%     else
-%         keepT = t(stim_idx(end-1)-5:stim_idx(end)-5) ;
-%         keepV = V(stim_idx(end-1)-5:stim_idx(end)-5) ;
-%         keepCai = Cai(stim_idx(end-1)-5:stim_idx(end)-5) ;
-%         errorcode = 0 ;
-%     end
-    
 % % For stimulated cells
 else  
 %   [~,dex_t] = min(abs(t-stimtimes(end))) ;   % last AP 
@@ -133,12 +108,12 @@ end % IF, difference between stimulated & spontaneously beating cells
 % % AP duration calculation common to both stimulated & spontaneous
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Vderiv = [keepV(2:end);keepV(end)] - keepV ;
-% % [~,dexmax] = max(Vderiv) ;
-% [~,dexmax] = maxk(Vderiv,5) ;
-% dexmax = min(dexmax) ;
-% tinit = keepT(dexmax) ;
-tinit = keepT(1) ;
+Vderiv = [keepV(2:end);keepV(end)] - keepV ;
+% [~,dexmax] = max(Vderiv) ;
+[~,dexmax] = maxk(Vderiv,5) ;
+dexmax = min(dexmax) ;
+tinit = keepT(dexmax) ;
+% tinit = keepT(1) ;
     
 keepT = keepT - tinit ;
 

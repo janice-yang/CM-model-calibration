@@ -38,7 +38,7 @@ runNum = seed ;
 mkdir('GA/Results', ['Run_',int2str(runNum)]);
 save(['GA/Results/Run_', int2str(runNum), '/runNum.mat'], 'runNum')
 
-isNormalized = false ; % scale dataset from 0 (min) to 1 (max) when calibrating parameters
+isNormalized = true ; % scale dataset from 0 (min) to 1 (max) when calibrating parameters
 if isNormalized
     scaleCaT = false ;
 else
@@ -56,7 +56,7 @@ sigmaCaT = 0.02 ; % SD of noise to be added to pseudodata (CaT)
 % FOR IN VITRO DATA:
 realdata = true ;
 % filename = '20220113_paced.xlsx' ; % Spreadsheet with data in 2-3 columns (Time, AP, CaT)
-filename = 'DMG240.xlsx'
+filename = 'DMG240.xlsx' ;
 % sheetnames = {'1.8Ca 1Hz'} ;
 sheetnames = {'DMG240_100Na_1Hz'} ;
 protocol_number = [33] ; % for GA simulations
@@ -106,7 +106,7 @@ end
 %%
 % Population Size and Variation
 
-popsize = 50 ; 
+popsize = 150 ; 
 
 % lower and upper bounds
   lb = ones(nvars,1)*-2;   
@@ -134,7 +134,7 @@ options = optimoptions(@ga, ...
     'PlotFcn', {@gaplotscorediversity, @gaplotbestf, @gaplotbestindiv}, ...
     'OutputFcn', outputfcn, ... 
     'Display', 'iter',...
-    'MaxGenerations', 10,... % 100
+    'MaxGenerations', 20,... % 100
     'MaxStallGenerations', 5);   % if there is no change in the best fitness value for some number of generations, GA stops
 
 save(['GA/Results/Run_',int2str(runNum), '/Details'], 'cell_number','protocol_number', 'isNormalized', 'scaleCaT', 'options', 'popsize');
