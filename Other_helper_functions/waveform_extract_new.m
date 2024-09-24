@@ -9,6 +9,7 @@ errorcode = 0 ;
 tinit = 0 ;
 
 i_keep = 0 ; % number of points before upstroke to keep
+i_cut = 10 ; % number of points to cut off at end
 
 duration_default = 2000 ;
 if (max(t) > duration_default)
@@ -116,5 +117,10 @@ tinit = keepT(dexmax) ;
 % tinit = keepT(1) ;
     
 keepT = keepT - tinit ;
+
+% Cut off end of trace
+keepT = keepT(1:end-i_cut) ;
+keepV = keepV(1:end-i_cut) ;
+keepCai = keepCai(1:end-i_cut) ;
 
 return
