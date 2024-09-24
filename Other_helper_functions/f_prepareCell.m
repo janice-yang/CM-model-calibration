@@ -112,9 +112,9 @@ if protocol_number == 34 % 50% ICaL block
     icalblock(3) = 0.5;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
-if protocol_number == 35 % 40% IKr block
+if protocol_number == 35 % 40% IKr block; trying 25% for 10nM
     ikrblock = ones(1,16);
-    ikrblock(6) = 0.6;
+    ikrblock(6) = 0.75;
     setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
 end
 

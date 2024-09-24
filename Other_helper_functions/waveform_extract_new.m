@@ -8,7 +8,7 @@ errorcode = 0 ;
 
 tinit = 0 ;
 
-i_keep = 10 ; % number of points before upstroke to keep
+i_keep = 0 ; % number of points before upstroke to keep
 
 duration_default = 2000 ;
 if (max(t) > duration_default)

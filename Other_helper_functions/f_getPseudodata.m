@@ -61,7 +61,7 @@ for i=1:length(protocol_num)
     else % spontaneous beating
         stimtimes = [] ;
     end
-    [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expVCaT(:, 1),expVCaT(:, 2),stimtimes, 1);
+    [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expVCaT(:, 1),expVCaT(:, 2),stimtimes, 2);
     
     header = {'Cell', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};
     lengthToExtract = length(keepT);
