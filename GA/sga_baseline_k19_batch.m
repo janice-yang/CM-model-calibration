@@ -93,8 +93,8 @@ nvars = length(names) ;
 
 % Fitness Function (includes evaluation of model)
 % fitnessfcn = @sga_fitness_k19;
-fitnessfcn = @(x)sga_fitness_k19(x, runNum, 1); 
-outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 1) ;
+fitnessfcn = @(x)sga_fitness_k19(x, runNum, 2); 
+outputfcn = @(options,state,flag)ga_output_k19(options, state, flag, runNum, 2) ;
 
 %%Load experimental data:
 if realdata
