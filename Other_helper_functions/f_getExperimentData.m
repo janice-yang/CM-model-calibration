@@ -68,6 +68,11 @@ for i=1:length(protocol_num)
     if strcmp(datatype, 'APCaT')
         expV = datamatrix(:, 2) ;
         expCaT = datamatrix(:, 3) ;
+        %% Filter first?
+        
+        expV = medfilt1(expV, n_filter) ;
+        expCaT = medfilt1(expCaT, n_filter) ;
+        %%
         
         % Find upstroke times 
         d2V = diff(expV, n_diff) ;
@@ -124,11 +129,11 @@ for i=1:length(protocol_num)
         % 
         % % keepT = expT - expT(1) ;
         % keepT = linspace(0, expT(last_idx(end)) - expT(last_idx(end-1)), length(v)) ;
-        [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes,3) ; % Extract last n beats
+        [keepT, v, ca,tinit,errorcode] = waveform_extract_new(expT, expV,expCaT,stimtimes,2) ; % Extract last n beats
 
         % Filter
-        v = medfilt1(v, n_filter) ;
-        ca = medfilt1(ca, n_filter) ;
+        % v = medfilt1(v, n_filter) ;
+        % ca = medfilt1(ca, n_filter) ;
         % keepT = expT ;
         
         header = {'Filename', 'Protocol', 'Time_AP', 'AP', 'Time_CaT', 'CaT'};

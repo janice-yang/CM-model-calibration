@@ -107,14 +107,14 @@ end
 if protocol_number == 32 || protocol_number == 36 % Hyponatremia 70%
     setEnvironment(k19, T, 105.7, Cao, Ko) ; 
 end
-if protocol_number == 34 % 50% ICaL block
+if protocol_number == 34 % 25% ICaL block
     icalblock = ones(1,16);
     icalblock(3) = 0.5;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
-if protocol_number == 35 % 40% IKr block; trying 25% for 10nM
+if protocol_number == 35 % 40% IKr block?; trying 10% for 1nM
     ikrblock = ones(1,16);
-    ikrblock(6) = 0.75;
+    ikrblock(6) = 0.9;
     setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
 end
 

@@ -100,9 +100,9 @@ else
   % [~,dex_t] = min(abs(t-stimtimes(end-1))) ;    % 2nd to last AP
   [~,dex_t] = min(abs(t-stimtimes(end-n))) ;    % n-th to last AP
   [~,dex_t_end] = min(abs(t-stimtimes(end))) ; % end for single AP extraction   
-  keepT = t(dex_t-i_keep:dex_t_end-i_keep) ;
-  keepV = V(dex_t-i_keep:dex_t_end-i_keep) ;
-  keepCai = Cai(dex_t-i_keep:dex_t_end-i_keep) ;
+  keepT = t(dex_t-i_keep:dex_t_end-i_cut) ;
+  keepV = V(dex_t-i_keep:dex_t_end-i_cut) ;
+  keepCai = Cai(dex_t-i_keep:dex_t_end-i_cut) ;
 end % IF, difference between stimulated & spontaneously beating cells
 
 %%%%%%%%%%%%%%%%%%%%
