@@ -3,16 +3,16 @@ close all
 
 realdata = true ; 
 % filename = '20220113_paced.xlsx' ; % experimental data file
-% filename = 'DMG240.xlsx' ;
-filename = 'TestDavidDataProcessed2.xlsx' ;
-cell_number = 12 ;
-protocol_number = [35] ;
+filename = 'DMG242.xlsx' ;
+% filename = 'TestDavidDataProcessed.xlsx' ;
+cell_number = 4 ;
+protocol_number = [33] ;
 % sheetnames = {'1.0Ca 1Hz','1.8Ca 1Hz','1.8Ca 1.25Hz'} ;
-% sheetnames = {'1.8Ca 1Hz'}
-% sheetnames = {'DMG240_70Na_1Hz'} ;
-% sheetnames = {'DMG240_50pNifedipine50nM_1Hz'} ;
-sheetnames = {'DMG240_50pDofetilide1nM_0.5Hz'}
-nbeats = [15] ;
+% sheetnames = {'1.8Ca 1.25Hz'} ;
+sheetnames = {'100Na_1Hz'} ;
+% sheetnames = {'DMG240_100Na_1Hz','DMG240_Nifedipine50nM_1Hz'} ;
+% sheetnames = {'DMG240_100Na_1Hz','DMG240_Dofetilide1nM_0.5Hz'} ;
+nbeats = [11] ;
 n_extract = 2 ;
 isNormalized = true ;  
 datatype = 'APCaT' ; 

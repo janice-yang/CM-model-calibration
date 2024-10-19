@@ -8,19 +8,19 @@ amplitudes = [60, 0, 60, 0, 60, 0, 60, 0, 60, 0,...
               60, 0, 60, 0, 60, 0, 60, 60, 0, ...
               0, 60, 0, 60, 0, 60, ... % 20-25 
               60, 60, 60, 60, 60, 60, ... % 26-31 
-              60, 60, 60, 60, 60, 60, 60] ; % 32-38
+              60, 60, 60, 60, 60, 60, 60, 60] ; % 32-39
 numPulses = [125, 100, 125, 100, 125, 100, 125, 100, 125, 100,...
     125, 100, 125, 100, 125, 100, 167, 125, 100, ...
     100, 100, 100, 100, 100, 100, ...
     200, 125, 50, 200, 125, 50, ...
-    100, 100, 100, 50, 50, 100, 100]; 
+    100, 100, 100, 50, 50, 100, 100, 100]; 
 numPulses = numPulses .* 3 ;
 precedingTime = [799, 999, 799, 999, 799, 999, 799, 999, 799, 999,...
     799, 999, 799, 999, 799, 999, 599, 799, 999, ...
     999, 999, 999, 999, 999, 999, ...
     499, 799, 1999, 499, 799, 1999, ...
-    999, 999, 999, 1999, 1999, 999, 999];
-pulseDurations = ones(1, 38); 
+    999, 999, 999, 1999, 1999, 999, 999, 999];
+pulseDurations = ones(1, 39); 
 
 % Use default initial parameters if none supplied, otherwise use supplied params
 if ~exist('init','var')
@@ -107,7 +107,7 @@ end
 if protocol_number == 32 || protocol_number == 36 % Hyponatremia 70%
     setEnvironment(k19, T, 105.7, Cao, Ko) ; 
 end
-if protocol_number == 34 % 25% ICaL block
+if protocol_number == 34 % 50% ICaL block
     icalblock = ones(1,16);
     icalblock(3) = 0.5;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
@@ -126,6 +126,11 @@ end
 if protocol_number == 38 % 90% ICaL block?
     icalblock = ones(1,16);
     icalblock(3) = 0.1;
+    setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
+end
+if protocol_number == 39 % 100% ICaL block?
+    icalblock = ones(1,16);
+    icalblock(3) = 0.0;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
 
