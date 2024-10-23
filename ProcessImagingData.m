@@ -2,9 +2,9 @@ clear
 close all
 
 % Extracting voltage & Ca imaging data for f_getExperimentalData
-output_file = 'DMG242.xlsx' ;
+output_file = 'DMG242_Fselected.xlsx' ;
 % sheetname = 'DMG242PF_Dofetilide50nM_0.5Hz' ;
-sheetname = 'Nifedipine300nM_1Hz' ;
+sheetname = '70Na_1Hz' ;
 headers = {'t', 'AP', 'CaT'} ;                      
 t_end = 11000 ;                                     % ms
 data = zeros(1000000, length(headers)) ; 
@@ -12,16 +12,72 @@ data = zeros(1000000, length(headers)) ;
 % Get AP data
 file = uigetfile_n_dir([pwd, '/ExperimentalData'] , 'Select file(s) containing AP data (ch2):') ;
 AP = imread(file{1}) ;
-AP_med = mean(AP, 2) ;
-data(1:length(AP_med), 1) = linspace(0, t_end, length(AP_med)) ;    % time
-data(1:length(AP_med), 2) = AP_med ;                                % AP
+AP = AP' ;
+
+% Select image sections to process
+figure
+imagesc(AP)
+disp('Click on the upper and lower limits of the cell region')
+clickpoints = ginput(2) ;
+flashpixels = clickpoints(:,2) ;
+pixel1 = round(min(flashpixels)) ;
+pixel2 = round(max(flashpixels)) ;
+
+flashregion = pixel1:pixel2 ;
+flash = mean(AP(flashregion,:)) ;
+
+disp('Click on left and right limits of F0 (background signal) region')
+F0clickpoints = ginput(2) ;
+baseline = F0clickpoints(:,1) ;
+pixel1 = round(min(baseline)) ;
+pixel2 = round(max(baseline)) ;
+
+F0 = mean(flash(pixel1:pixel2)) ;
+% figure
+% hold on
+% plot(1:length(flash), flash)
+% plot(1:length(flash), ones(1, length(flash))*F0)
+% 
+% figure
+% hold on
+% plot(1:length(flash), flash/F0)
+AP_signal = flash/F0 ;
+close
+
+% AP_signal = mean(AP, 2) ;
+data(1:length(AP_signal), 1) = linspace(0, t_end, length(AP_signal)) ;    % time
+data(1:length(AP_signal), 2) = AP_signal ;                                % AP
 
 
 % Get CaT data
 file = uigetfile_n_dir([pwd, '/ExperimentalData'], 'Select file(s) containing CaT data (ch1):') ;
 CaT = imread(file{1}) ;
-CaT_med = mean(CaT, 2) ;
-data(1:length(CaT_med), 3) = CaT_med ;                              % CaT
+CaT = CaT' ;
+
+% Select image section to process
+figure
+imagesc(CaT)
+disp('Click on the upper and lower limits of the cell region')
+clickpoints = ginput(2) ;
+flashpixels = clickpoints(:,2) ;
+pixel1 = round(min(flashpixels)) ;
+pixel2 = round(max(flashpixels)) ;
+
+flashregion = pixel1:pixel2 ;
+flash = mean(CaT(flashregion,:)) ;
+
+% disp('Click on left and right limits of F0 (background signal) region')
+% clickpoints = ginput(2) ; % Use same location as AP
+baseline = F0clickpoints(:,1) ;
+pixel1 = round(min(baseline)) ;
+pixel2 = round(max(baseline)) ;
+
+F0 = mean(flash(pixel1:pixel2)) ;
+CaT_signal = flash/F0 ;
+close
+
+% CaT_signal = mean(CaT, 2) ;
+data(1:length(CaT_signal), 3) = CaT_signal ;                              % CaT
 
 % Remove trailing zeros
 i_end = find(data(:,1), 1, 'last') ;
@@ -33,7 +89,7 @@ writematrix(data, ['ExperimentalData/', output_file], 'Sheet', sheetname) ;
 
 figure
 subplot(2,2,1)
-image(AP', 'CDataMapping', 'scaled')
+image(AP, 'CDataMapping', 'scaled')
 yticks([])
 yticklabels([])
 ylabel('28 um')
@@ -41,7 +97,7 @@ xticks([])
 xticklabels([])
 xlabel('Time')
 subplot(2,2,2)
-image(CaT', 'CDataMapping', 'scaled')
+image(CaT, 'CDataMapping', 'scaled')
 yticks([])
 yticklabels([])
 ylabel('28 um')
@@ -50,13 +106,13 @@ xticklabels([])
 xlabel('Time')
 subplot(2,2,3)
 plot(data(:,1), data(:,2), 'k-')
-ylabel('Fluor intensity')
+ylabel('F/F_0')
 xlabel('Time (ms)')
 title('AP')
 xlim([0 t_end])
 subplot(2,2,4)
 plot(data(:,1), data(:,3), 'k-')
-ylabel('Fluor intensity')
+ylabel('F/F_0')
 xlabel('Time (ms)')
 title('CaT')
 xlim([0 t_end])
