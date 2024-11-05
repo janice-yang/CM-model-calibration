@@ -8,19 +8,22 @@ amplitudes = [60, 0, 60, 0, 60, 0, 60, 0, 60, 0,...
               60, 0, 60, 0, 60, 0, 60, 60, 0, ...
               0, 60, 0, 60, 0, 60, ... % 20-25 
               60, 60, 60, 60, 60, 60, ... % 26-31 
-              60, 60, 60, 60, 60, 60, 60, 60] ; % 32-39
+              60, 60, 60, 60, 60, 60, ... % 32-37
+              60, 60, 60, 60, 60] ; % 38-42
 numPulses = [125, 100, 125, 100, 125, 100, 125, 100, 125, 100,...
     125, 100, 125, 100, 125, 100, 167, 125, 100, ...
     100, 100, 100, 100, 100, 100, ...
     200, 125, 50, 200, 125, 50, ...
-    100, 100, 100, 50, 50, 100, 100, 100]; 
+    100, 100, 100, 100, 100, 100, ...
+    50, 50, 50, 50, 50]; 
 numPulses = numPulses .* 3 ;
 precedingTime = [799, 999, 799, 999, 799, 999, 799, 999, 799, 999,...
     799, 999, 799, 999, 799, 999, 599, 799, 999, ...
     999, 999, 999, 999, 999, 999, ...
     499, 799, 1999, 499, 799, 1999, ...
-    999, 999, 999, 1999, 1999, 999, 999, 999];
-pulseDurations = ones(1, 39); 
+    999, 999, 999, 999, 999, 999, ...
+    1999, 1999, 1999, 1999, 1999];
+pulseDurations = ones(1, length(numPulses)); 
 
 % Use default initial parameters if none supplied, otherwise use supplied params
 if ~exist('init','var')
@@ -100,37 +103,53 @@ end
 % if protocol_number == 26 || protocol_number == 27 || protocol_number == 28
 %     setEnvironment(k19, T, Nao, 1.8, Ko) ;
 % end
-if protocol_number == 29 || protocol_number == 30 || protocol_number == 31 %Hypocalcemia
+if protocol_number == 29 || protocol_number == 30 || protocol_number == 31 % Hypocalcemia
     setEnvironment(k19, T, Nao, 1.0, Ko) ;
 end
 
-if protocol_number == 32 || protocol_number == 36 % Hyponatremia 70%
+if protocol_number == 32 % Hyponatremia 70%
     setEnvironment(k19, T, 105.7, Cao, Ko) ; 
 end
-if protocol_number == 34 % 50% ICaL block
+
+if protocol_number == 34 % 50% ICaL block - 50nM Nifedipine
     icalblock = ones(1,16);
     icalblock(3) = 0.5;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
-if protocol_number == 35 % 40% IKr block?; trying 10% for 1nM
-    ikrblock = ones(1,16);
-    ikrblock(6) = 0.9;
-    setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
-end
 
-if protocol_number == 37 % 70% ICaL block?
+if protocol_number == 35 % 70% ICaL block
     icalblock = ones(1,16);
     icalblock(3) = 0.3;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000) 
 end
-if protocol_number == 38 % 90% ICaL block?
+if protocol_number == 36 % 90% ICaL block - 150nM Nifedipine
     icalblock = ones(1,16);
     icalblock(3) = 0.1;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
-if protocol_number == 39 % 100% ICaL block?
+if protocol_number == 37 % 100% ICaL block - 300nM Nifedipine
     icalblock = ones(1,16);
     icalblock(3) = 0.0;
     setUpDrugApplication(k19, icalblock, zeros(1,16), ones(1,16)*300000)    
 end
 
+if protocol_number == 39 % trying 10% for 1nM
+    ikrblock = ones(1,16);
+    ikrblock(6) = 0.9;
+    setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
+end
+if protocol_number == 40 % trying 50% IKr block for 10nM
+    ikrblock = ones(1,16);
+    ikrblock(6) = 0.5;
+    setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
+end
+if protocol_number == 41 % trying 90% IKr block for 25nM
+    ikrblock = ones(1,16);
+    ikrblock(6) = 0.1;
+    setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
+end
+if protocol_number == 42 % trying 100% IKr block for 50nM
+    ikrblock = ones(1,16);
+    ikrblock(6) = 0.0;
+    setUpDrugApplication(k19, ikrblock, zeros(1,16), ones(1,16)*300000)    
+end

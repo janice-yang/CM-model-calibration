@@ -2,9 +2,9 @@ clear
 close all
 
 % Extracting voltage & Ca imaging data for f_getExperimentalData
-output_file = 'DMG242_Fselected.xlsx' ;
+output_file = 'DMG242PF_Fselected.xlsx' ;
 % sheetname = 'DMG242PF_Dofetilide50nM_0.5Hz' ;
-sheetname = '70Na_1Hz' ;
+sheetname = 'Dofetilide50nM_0.5Hz' ;
 headers = {'t', 'AP', 'CaT'} ;                      
 t_end = 11000 ;                                     % ms
 data = zeros(1000000, length(headers)) ; 
