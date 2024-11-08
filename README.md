@@ -1,6 +1,6 @@
 # iPSC-CM mathematical model calibration
 This repository contains code to run simulations, model calibrations, and reproduce the figures in "Creating cell-specific computational models of stem cell-derived cardiomyocytes using optical experiments" by Yang J et al. This work was performed in the Cardiac Systems Pharmacology Lab of Dr. Eric A. Sobie in the Department of Pharmacological Sciences at the Icahn School of Medicine Mount Sinai.
-- Yang J, Daily N, Pullinger TK, Wakatsuki T, Sobie EA. Creating cell-specific computational models of stem cell-derived cardiomyocytes using optical experiments. bioRxiv; 2024. p. 2024.01.07.574577. doi:10.1101/2024.01.07.574577
+- Yang J, Daily NJ, Pullinger TK, Wakatsuki T, and Sobie EA. “Creating Cell-Specific Computational Models of Stem Cell-Derived Cardiomyocytes Using Optical Experiments.” PLOS Computational Biology 20, no. 9 (September 11, 2024): e1011806. https://doi.org/10.1371/journal.pcbi.1011806.
 
 ## Code requirements
 MATLAB version 2019 or higher; version 2019a was used to create the Kernik model populations, and 2020b-2023b were used to perform analysis.
