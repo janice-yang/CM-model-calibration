@@ -2,17 +2,20 @@ clear
 close all
 
 realdata = true ; 
+
 % filename = '20220113_paced.xlsx' ; % experimental data file
-filename = 'DMG242.xlsx' ;
+filename = 'DMG242PF_Fselected.xlsx' ;
 % filename = 'TestDavidDataProcessed.xlsx' ;
 cell_number = 4 ;
-protocol_number = [33] ;
+protocol_number = [33,32] ;
+% protocol_number = [21,29] ;
 % sheetnames = {'1.0Ca 1Hz','1.8Ca 1Hz','1.8Ca 1.25Hz'} ;
-% sheetnames = {'1.8Ca 1.25Hz'} ;
-sheetnames = {'100Na_1Hz'} ;
-% sheetnames = {'DMG240_100Na_1Hz','DMG240_Nifedipine50nM_1Hz'} ;
-% sheetnames = {'DMG240_100Na_1Hz','DMG240_Dofetilide1nM_0.5Hz'} ;
-nbeats = [11] ;
+% sheetnames = {'1.8Ca 1Hz', '1.0Ca 2Hz'} ;
+% sheetnames = {'Nifedipine0nM_1Hz','Nifedipine50nM_1Hz','Nifedipine150nM_1Hz'} ;
+sheetnames = {'100Na_1Hz','70Na_1Hz'} ;
+% sheetnames = {'100Na_1Hz', 'Dofetilide1nM_0.5Hz'} ;
+% sheetnames = {'Dofetilide0nM_0.5Hz','Dofetilide1nM_0.5Hz','Dofetilide10nM_0.5Hz'} ;
+nbeats = [11,11] ;
 n_extract = 2 ;
 isNormalized = true ;  
 datatype = 'APCaT' ; 
@@ -168,11 +171,11 @@ for i=1:length(folders)
     
     end
     figure(single)
-    if isNormalized
-        savefig([base, '/predicted_traces_norm_', protocol_str, '_Run', int2str(runNum)]) ;
-    else
-        savefig([base, '/predicted_traces_raw_', protocol_str, '_Run', int2str(runNum)]) ;
-    end
+    % if isNormalized
+    %     savefig([base, '/predicted_traces_norm_', protocol_str, '_Run', int2str(runNum)]) ;
+    % else
+    %     savefig([base, '/predicted_traces_raw_', protocol_str, '_Run', int2str(runNum)]) ;
+    % end
     close(single)
     % Average and total fitness score for run i
     % Save average, total, & individual fitness scores in run folder
@@ -202,11 +205,11 @@ legend(lSub, 'Experiment', 'Location', 'best')
 
 % Save
 if isNormalized
-    print('-dpng', [base, '/predicted_traces_norm_', protocol_str])
+    % print('-dpng', [base, '/predicted_traces_norm_', protocol_str])
     print('-dsvg', [base, '/predicted_traces_norm_', protocol_str])
     savefig([base, '/predicted_traces_norm_', protocol_str, '.fig'])
 else
-    print('-dpng', [base, '/predicted_traces_raw_', protocol_str])
+    % print('-dpng', [base, '/predicted_traces_raw_', protocol_str])
     print('-dsvg', [base, '/predicted_traces_raw_', protocol_str])
     savefig([base, '/predicted_traces_raw_', protocol_str, '.fig'])
 end

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#BSUB -L /bin/sh
+#BSUB -o %J.out
+#BSUB -e %J.err
+#BSUB -B
+#BSUB -N
+#BSUB -u USEREMAIL
+#BSUB -J JBNAME
+
+#BSUB -P ACCOUNT 
+#BSUB -q QUEUE				# alloc / premium (1.5x)/ expressalloc (2h max)/ low
+#BSUB -W WALLTIME			# Wall clock limit for job (hour)
+#BSUB -n CORES				# Number of CPU cores required
+#BSUB -R "span[hosts=1]"
+
+## Load Package
+module load matlab/VERSION
+module load proxies
+## !!! Comment out <cell_number> and <protocol_number> within script before running batch !!!
+## Run sga_baseline_k19.m with specified cell and protocol sequence
+# Or ga_baseline_k19.m for multi-objective GA
+matlab -nodisplay -nosplash -r "clear; close all; proj = openProject('../CMmodelcalibration.prj'); rng(SEED); runNum = SEED; parpool(CORES); realdata=REALDATA; cell_number = CELLID; protocol_number = PROTOCOLSEQ; isNormalized = NORMALIZATION; scaleCaT = SCALECATBOOL; datatype = DATATYPE; sigmaAP = SIGMAAP; sigmaCaT = SIGMACAT; sga_baseline_k19_batch; close(proj); quit"

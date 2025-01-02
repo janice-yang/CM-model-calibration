@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#BSUB -L /bin/sh
+#BSUB -o organize_results.out
+#BSUB -e organize_results.err
+#BSUB -B
+#BSUB -N
+#BSUB -u <username/email>
+#BSUB -J organize_results
+
+#BSUB -P <account name>
+#BSUB -q <queue name>                
+#BSUB -W 00:10                      # Wall clock limit for job (hh:mm)
+#BSUB -n 1                          # Number of CPU cores required
+#BSUB -R "span[hosts=1]"
+
+## Path to .list files of cells and protocol sequences - change as needed
+cell_list=cells.list
+protocol_list=protocol_sequences.list
+
+# Make experiment folder and move all runs to that folder
+cell_ID=$(cat $cell_list)
+protocol_sequence=$(cat $protocol_list)
+
+# protocol_sequence is in format [#,#,#] - change to #-#-# for file name
+sequence_name=${protocol_sequence//,/-}
+sequence_name=${sequence_name//[/}
+sequence_name=${sequence_name//]/}
+
+# Normalization (norm or raw)
+normalization=norm
+# Waveform(s) fit (AP,CaT,or APCaT)
+fit=APCaT
+#fit=Paci_APCaT_CaLtau_scale
+
+# Put together folder name
+folder_name=sga_cell${cell_ID}_${sequence_name}_${normalization}_${fit}
+
+if [ ! -d ../GA/Results/$folder_name ] 
+then
+    mkdir ../GA/Results/$folder_name
+    mv ../GA/Results/Run_* ../GA/Results/$folder_name
+
+    mkdir ../GA/Results/${folder_name}/job_info
+    if ls ${cell_ID}.${sequence_name}.* 1> /dev/null 2>&1; then
+        mv ${cell_ID}.${sequence_name}.* ../GA/Results/${folder_name}/job_info
+    fi
+    # Move error files
+    if ls *.err 1> /dev/null 2>&1; then
+        mv *.err ../GA/Results/${folder_name}/job_info
+    fi
+    # Move standard output files
+    if ls *.out 1> /dev/null 2>&1; then
+        mv *.out ../GA/Results/${folder_name}/job_info
+    fi
+else
+    echo "Experiment folder already exists - check to make sure data isn't overrun."
+fi
